@@ -238,7 +238,15 @@ void ChatServerForm::inviteClient()
         QDataStream out(&sendArray, QIODevice::WriteOnly);
         out << Chat_Invite;
         out.writeRawData("", 1020);
+
         QTcpSocket* sock = clientSocketHash[name];
+
+        // 로그인 안한사람 invite할 때 crashed 나는 문제 해결
+        if(sock == nullptr)
+        {
+            return;
+        }
+
         sock->write(sendArray);
 
         quint16 port = sock->peerPort();    // invite를 했을 때 고객의 이름이 messagetreewidget에 뜨게 만들어주는 부분
@@ -333,6 +341,7 @@ void ChatServerForm::removeClientFromServer(int i)
 void ChatServerForm::modifyClientFromServer(QString name, int id, int i)
 {
     ui->clientTreeWidget->topLevelItem(i)->setText(1, name);
+    clientIDHash[name] = id;
 }
 
 
@@ -349,7 +358,7 @@ void ChatServerForm::clientNameSended(QString name)
 {
     int nameflag;
 
-    qDebug() << "dddddddddddd" << ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1).length();
+    qDebug() << "dddddddddddd" << ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1)/*.length()*/;
     if(ui->clientTreeWidget->findItems(name, Qt::MatchFixedString, 1).length() == 0)
         nameflag = 0;
     else
