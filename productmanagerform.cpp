@@ -86,7 +86,7 @@ ProductManagerForm::~ProductManagerForm()
 /*상품아이디 만들기*/
 int ProductManagerForm::makeId( )
 {
-    if(productList.size( ) == 0) {          //상품아이디가 없으면 100번부터 고객아이디를 부여
+    if(productList.size( ) == 0) {          //상품아이디가 없으면 10000번부터 고객아이디를 부여
         return 10000;
     } else {
         auto id = productList.lastKey();    //productList의 마지막 키 값 + 1로 다음 키 값을 설정해 줌
@@ -121,20 +121,20 @@ void ProductManagerForm::on_searchPushButton_clicked()
     ui->searchTreeWidget->clear();                                         //search 버튼 다시 누르기 전에 저장되어 있었던 정보를 지워줌
     int i = ui->searchComboBox->currentIndex();                            //i에 검색콤보박스의 현재인덱스 번호를 저장해준다
     //MatchCaseSensitive: 대소문자 구별, MatchContains: 포함하는지 확인
-    auto flag = (i==0 || i==2)? Qt::MatchCaseSensitive|Qt::MatchContains   //flag값을 지정해 줌. i가 0이 아닐 때는 입력한 값이 포함되면 검색이 되도록 만듦
-                       : Qt::MatchCaseSensitive;                           //i가 0이 아닌 값일 때는 입력한 값이 정확할 때만 검색이 되도록 만듦
+    auto flag = (i==0 || i==2)? Qt::MatchCaseSensitive //flag값을 지정해 줌. i가 0이나 2일 때는 입력한 값이 포함되면 검색이 되도록 만듦
+                       : Qt::MatchCaseSensitive|Qt::MatchContains;         //i가 0이 아닌 값일 때는 입력한 값이 정확할 때만 검색이 되도록 만듦
 
     {
-        auto items = ui->treeWidget->findItems(ui->searchLineEdit->text(), flag, i);    //flag와 i값에 해당하는 정보를 searchLineEdit에 입력한 텍스트를 찾고, items에 해당 값을 저장해준다
+        auto items = ui->treeWidget->findItems(ui->searchLineEdit->text(), flag, i); //flag와 i값에 해당하는 정보를 searchLineEdit에 입력한 텍스트를 찾고, items에 해당 값을 저장해준다
 
-        foreach(auto i, items) {                                            //아이템들을 하나씩 꺼내옴
-            ProductItem* p = static_cast<ProductItem*>(i);                  //i의 자료형을 ClientItem이라는 형식으로 변환하고 고정
+        foreach(auto i, items) {                                           //아이템들을 하나씩 꺼내옴
+            ProductItem* p = static_cast<ProductItem*>(i);                 //i의 자료형을 ProductItem이라는 형식으로 변환하고 고정
             int id = p->id();
             QString productname = p->getProductName();
             int price = p->getPrice();
             QString category = p->getCategory();
-            ProductItem* item = new ProductItem(id, productname, price, category);   //id, productname, price, category를 item에 넣어줌
-            ui->searchTreeWidget->addTopLevelItem(item);                    //item을 searchTreeWidget의 맨 위에 추가해 줌
+            ProductItem* item = new ProductItem(id, productname, price, category); //id, productname, price, category를 item에 넣어줌
+            ui->searchTreeWidget->addTopLevelItem(item);                   //item을 searchTreeWidget의 맨 위에 추가해 줌
         }
     }
 }
@@ -178,7 +178,8 @@ void ProductManagerForm::on_addPushButton_clicked()
     productname = ui->productnameLineEdit->text();      //nameLineEdit에 입력한 값을 변수 name에 저장해준다
     price = ui->priceLineEdit->text().toInt();          //priceLineEdit에 입력한 값을 변수 price에 int형으로 바꾸어 저장해준다
     category = ui->categoryLineEdit->text();            //categoryLineEdit에 입력한 값을 변수 category에 저장해준다
-    if(productname.length()) {                          //이름 길이가 1이상일 때만 if문 실행
+
+    if(productname.length()) {                          //상품이름 길이가 1이상일 때만 if문 실행
         ProductItem* p = new ProductItem(id, productname, price, category);
         productList.insert(id, p);                      //productList에 정보들을 넣어줌
         ui->treeWidget->addTopLevelItem(p);             //treeWidget에 p값을 추가해 줌
